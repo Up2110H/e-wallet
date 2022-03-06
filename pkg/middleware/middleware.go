@@ -3,6 +3,6 @@ package middleware
 type Middleware struct {
 }
 
-func NewMiddleware() Middleware {
-	return Middleware{}
+func NewMiddleware() *Middleware {
+	return &Middleware{}
 }

@@ -8,6 +8,10 @@ import (
 type Handler struct {
 }
 
+func NewHandler() *Handler {
+	return &Handler{}
+}
+
 func (h *Handler) InitRoutes() *gin.Engine {
 	middlewares := middleware.NewMiddleware()
 	router := gin.New()
