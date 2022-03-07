@@ -18,7 +18,7 @@ type Server struct {
 }
 
 func NewServer() *Server {
-	return &Server{handlers: handler.NewHandler()}
+	return &Server{}
 }
 
 func (s *Server) Run() {
@@ -26,10 +26,11 @@ func (s *Server) Run() {
 		log.Fatal(err.Error())
 	}
 
-	s.configureServer()
 	if err := s.configureStore(); err != nil {
 		log.Fatalf("DB Init Error: %s", err.Error())
 	}
+
+	s.configureServer()
 
 	if err := s.httpServer.ListenAndServe(); err != nil {
 		log.Fatalf("Server Run Error: %s", err.Error())
@@ -42,6 +43,7 @@ func (s *Server) Shutdown(ctx context.Context) error {
 }
 
 func (s *Server) configureServer() {
+	s.handlers = handler.NewHandler(s.store)
 	s.httpServer = &http.Server{
 		Addr:           ":" + os.Getenv("PORT"),
 		Handler:        s.handlers.InitRoutes(),
