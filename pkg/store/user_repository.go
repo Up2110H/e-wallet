@@ -9,19 +9,22 @@ type UserRepository struct {
 	store *Store
 }
 
-func (r *UserRepository) Create(u *model.User) (*model.User, error) {
+func (r *UserRepository) Create(u *model.User, amount float64) (*model.User, error) {
+	ident := "null"
+	if u.Identified {
+		ident = "now()"
+	}
 	if err := r.store.db.QueryRow(
-		"INSERT INTO users (email, key, identified_at) VALUES ($1, $2, $3) RETURNING id",
+		"INSERT INTO users (email, key, identified_at) VALUES ($1, $2, "+ident+") RETURNING id, identified_at",
 		u.Email,
 		u.Key,
-		u.IdentifiedAt,
-	).Scan(&u.ID); err != nil {
+	).Scan(&u.ID, &u.IdentifiedAt); err != nil {
 		return nil, err
 	}
 
 	wallet := &model.Wallet{
 		UserId: u.ID,
-		Amount: 0,
+		Amount: amount,
 	}
 	_, err := r.store.Wallet().Create(wallet)
 
@@ -48,6 +51,8 @@ func (r *UserRepository) GetById(id int) (*model.User, error) {
 	); err != nil {
 		return nil, err
 	}
+
+	u.Identified = u.IdentifiedAt.Valid
 
 	wallet, err := r.store.Wallet().GetByUser(u)
 	if err != nil {

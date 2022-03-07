@@ -8,4 +8,5 @@ type User struct {
 	Key          string
 	IdentifiedAt pq.NullTime
 	Wallet       *Wallet `json:"-"`
+	Identified   bool
 }

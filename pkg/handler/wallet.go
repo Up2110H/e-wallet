@@ -51,7 +51,7 @@ func (h *Handler) newTransaction(c *gin.Context) {
 
 	limit, _ := strconv.ParseFloat(os.Getenv("UNIDENTIFIED_USER_LIMIT"), 64)
 
-	if user.IdentifiedAt.Valid {
+	if user.Identified {
 		limit, _ = strconv.ParseFloat(os.Getenv("IDENTIFIED_USER_LIMIT"), 64)
 	}
 
